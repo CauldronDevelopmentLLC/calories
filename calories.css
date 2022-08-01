@@ -1,0 +1,103 @@
+body {
+  text-align: center;
+}
+
+.today {
+  font-size: 110%;
+  font-weight: bold;
+  width: 100%;
+}
+
+#calories {
+  float: left;
+  clear: left;
+}
+
+#activity {
+  float: right;
+  clear: right;
+}
+
+#profile {
+  float: left;
+}
+
+#results {
+  float: right;
+}
+
+#calories, #activity, #profile, #results {
+  width: 49%;
+}
+
+.clear {
+  clear: both;
+}
+
+#frame {
+  width: 760px;
+  height: 500px;
+  margin-top: 10px;
+}
+
+h3 {
+  margin: 5px;
+}
+
+table {
+  border-collapse: collapse;
+  margin: auto;
+}
+
+table.calories, table.activity {
+  /* width: 80%;*/
+}
+
+table.users {
+  width: 60%;
+}
+
+td, th {
+  border: 1px solid black;
+  padding: 2px 5px;
+}
+
+.no-border td, .no-border th {
+  border: none;
+}
+
+.item, .name {
+  width: 100%;
+}
+
+td.cals, td.qnty, input.add-cals, input.add-qnty {
+  text-align: right;
+}
+
+input {
+  width: 80px;
+}
+
+input.lookup {
+  width: auto;
+}
+
+input.add-item, input.name {
+  width: 100%;
+}
+
+table.results th, table.profile th {
+  text-align: right;
+}
+
+.remain {
+  font-weight: bold;
+}
+
+.red {
+  color: red;
+}
+
+#stats td {
+  text-align: center;
+}
