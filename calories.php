@@ -48,7 +48,7 @@ function create_database() {
     'id INT NOT NULL AUTO_INCREMENT, '.
     'name VARCHAR(255) NOT NULL UNIQUE, ' .
     'height INT, ' .
-    'sex INT, ' . 
+    'sex INT, ' .
     'age INT, ' .
     'PRIMARY KEY(id))';
 
@@ -141,7 +141,7 @@ function set_daily($field, $value, $user, $date) {
   else
     $query = "UPDATE daily SET $field = '$value' " .
       "WHERE user = '$user' AND date = '$date'";
-  
+
   if (!mysql_query($query)) die(mysql_error());
 }
 
@@ -166,7 +166,6 @@ function cal_interface() {
   else $sex = 'Female';
   $age = $row['age'];
 
-  
   echo "<a href='?'>Admin</a> <a href='$url'>Reload</a> ";
   echo "<a href='?user=$user'>Today</a> ";
   echo "<a href='stats.php?user=$user'>Stats</a>";
@@ -194,7 +193,8 @@ function cal_interface() {
   echo "<th class='action'>Action</th>";
   echo "</tr>";
 
-  $gday = floor(strtotime($date) / 60 / 60 / 24 + 719528);
+  $gday = floor(strtotime($date) / 60 / 60 / 24 + 719529);
+
   $query = "SELECT * FROM calories WHERE $gday = TO_DAYS(ts) " .
     "AND user = '$user' ORDER BY ts, id";
   $result = mysql_query($query) or die(mysql_error());
@@ -290,7 +290,7 @@ function cal_interface() {
     "ORDER BY date DESC LIMIT 1";
 
   $result = mysql_query($query) or die(mysql_error());
-  
+
   if (mysql_num_rows($result)) {
     $row = mysql_fetch_array($result);
     $last_weight = $row['weight'];
@@ -302,11 +302,11 @@ function cal_interface() {
     "ORDER BY date DESC LIMIT 1";
 
   $result = mysql_query($query) or die(mysql_error());
-  
+
   if (mysql_num_rows($result)) {
     $row = mysql_fetch_array($result);
     $target = $row['cal_goal'];
-    
+
     if ($todays == NULL)
       set_daily('cal_goal', $target, $user, $date);
   }
@@ -326,9 +326,9 @@ function cal_interface() {
   else $w = $last_weight;
 
   if ($sexType == MALE)
-    $bmr = 66 + (6.23 * $w) + (12.7 * $height) - 6.8 * $age;
+    $bmr = 66 + (2.2 * 6.23 * $w) + (12.7 * $height) - 6.8 * $age;
   else
-    $bmr = 655 + (4.35 * $w) + (4.7 * $height) - 4.7 * $age;
+    $bmr = 655 + (2.2 * 4.35 * $w) + (4.7 * $height) - 4.7 * $age;
 
   $smr = $bmr * 1.2;
 
@@ -346,7 +346,7 @@ function cal_interface() {
   echo "<form method='post' action='$url'>";
   echo "<td class='weight'>";
   echo "<input type='hidden' name='cmd' value='set-weight'/>";
-  echo "<input name='weight' value='$weight'/>";
+  echo "<input name='weight' value='$weight'/>kg";
   echo "<input type='submit' value='Set'/></td>";
   echo "</form>";
   echo "</td>";
@@ -354,12 +354,12 @@ function cal_interface() {
 
   if ($change > 0) $class = 'red';
   else $class = '';
-  echo "<tr><th>Weight Change</th><td class='$class'>$change</td>";
+  echo "<tr><th>Weight Change</th><td class='$class'>$change kg</td>";
   echo "<th>SMR</th><td>$smr</td></tr>";
   echo "</table>";
   echo "</div>";
 
-  
+
   echo "<div id='results'>";
   echo "<h3>Results</h3>";
   echo "<table class='results'>";
@@ -375,7 +375,7 @@ function cal_interface() {
 
   if ($remain < 0) $class = 'red';
   else $class = '';
-  echo "<tr><th>Remaining Calories</th><td class='remain $class'>" . 
+  echo "<tr><th>Remaining Calories</th><td class='remain $class'>" .
     "$remain</td></tr>";
 
   echo "<tr><th>Calories Burned</th><td>$actsum</td></tr>";
@@ -406,9 +406,9 @@ echo "<script type='text/javascript'>" .
 echo '</head><body onload="javascript:firstFocus()">';
 
 if ($date != $now) $ts = "TIMESTAMPADD(SECOND, 86399, '$date')";
- else $ts = 'NOW()';
+else $ts = 'NOW()';
 
-switch ($_POST['cmd']) {
+switch ($_POST['cmd'] ?? '') {
  case "add":
    $query = "INSERT INTO calories (cals,item,user,ts) VALUES(" .
      $_POST['cals'] . ", '" . $_POST['item'] . "', " .
@@ -452,7 +452,7 @@ switch ($_POST['cmd']) {
  case "del-user":
    $query = "DELETE FROM users WHERE id = " . $_POST['id'];
    if (!mysql_query($query)) die(mysql_error());
-   
+
    admin_interface();
    break;
 
@@ -465,7 +465,7 @@ switch ($_POST['cmd']) {
      $_POST['sex'] . ")";
 
    if (!mysql_query($query)) die(mysql_error());
-   
+
    admin_interface();
    break;
 

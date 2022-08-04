@@ -4,20 +4,20 @@ include_once('fix_mysql.inc.php');
 require('config.php');
 
 putenv("TZ=$timezone");
+date_default_timezone_set($timezone);
 
 define("MALE", 0);
 define("FEMALE", 1);
 
 # Get variables
-$date = $_GET['date'];
-$user = $_GET['user'];
+$date = $_GET['date'] ?? '';
+$user = $_GET['user'] ?? '';
 
 $url = "?user=$user";
 $now = date("Y-m-d");
 
-if ($date == '')
-  $date = $now;
- else if ($date != $now) $url .= "&date=$date";
+if ($date == '') $date = $now;
+else if ($date != $now) $url .= "&date=$date";
 
 # Connect to database
 $con = mysql_connect($dbhost, $dbuser, $dbpass) or
