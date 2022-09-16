@@ -1,0 +1,74 @@
+---
+title: Calories
+
+help: Calories API
+
+endpoints:
+  /api/user:
+    GET:
+      return: list
+      sql: CALL GetUsers()
+
+  /api/user/:user:
+    args: {user: {}}
+
+    GET:
+      args:
+        date: {type: date, optional: true}
+        history: {type: u32, optional: true}
+      fields: [
+        "*", "calories", "activity", "weights", "goals", "cal_hist", "act_hist"]
+      sql: CALL GetUser(%(args.user)S, %(args.date)S, %(args.history)u)
+
+  /api/user/:user/weight:
+    args: {user: {}}
+
+    PUT:
+      args:
+        date: {type: date}
+        weight: {type: float}
+      sql: CALL SetWeight(%(args.user)S, %(args.date)S, %(args.weight)f)
+
+  /api/user/:user/goals:
+    args: {user: {}}
+
+    PUT:
+      args:
+        date: {type: date}
+        goal: {type: u32}
+      sql: CALL SetGoal(%(args.user)S, %(args.date)S, %(args.goal)u)
+
+  /api/user/:user/calories:
+    args: {user: {}}
+
+    PUT:
+      args:
+        date: {type: date, optional: true}
+        calories: {type: u32}
+        description: {type: string}
+      sql: >-
+        CALL AddCalories(%(args.user)S, %(args.date)S, %(args.calories)u,
+          %(args.description)S)
+
+
+    DELETE:
+      args:
+        id: {type: u64}
+      sql: CALL DeleteCalories(%(args.user)S, %(args.id)u)
+
+  /api/user/:user/activity:
+    args: {user: {}}
+
+    PUT:
+      args:
+        date: {type: date, optional: true}
+        calories: {type: u32}
+        description: {type: string}
+      sql: >-
+        CALL AddActivity(%(args.user)S, %(args.date)S, %(args.calories)u,
+          %(args.description)S)
+
+    DELETE:
+      args:
+        id: {type: u64}
+      sql: CALL DeleteActivity(%(args.user)S, %(args.id)u)

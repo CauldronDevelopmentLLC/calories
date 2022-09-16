@@ -1,0 +1,22 @@
+{
+  "name": "calories",
+  "version": "2.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "watch": "vite build --watch"
+  },
+  "dependencies": {
+    "vue": "^3.2.37",
+    "vue-chartjs": "^4.1.1",
+    "vue-router": "^4.0.16"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^1.9.2",
+    "@vue/compiler-sfc": "^3.0.4",
+    "pug": "^3.0.2",
+    "stylus": "^0.58.1",
+    "vite": "^2.9.12"
+  }
+}

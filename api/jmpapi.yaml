@@ -1,0 +1,10 @@
+options:
+  http-root: dist
+
+title: Calorie API Docs
+
+help: >
+  This page describes the JSON over HTTP API endpoints supported by this server.
+
+api:
+  calories: !include calories.yaml
