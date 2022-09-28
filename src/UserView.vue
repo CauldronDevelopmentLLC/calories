@@ -63,7 +63,15 @@ export default {
     smr() {return Math.round(this.bmr * 1.2)},
     cal_total() {return util.sum_key(this.user.calories, 'cals')},
     cal_remain() {return this.user.goal - this.cal_total},
-    act_total() {return util.sum_key(this.user.activity, 'cals')}
+    act_total() {return util.sum_key(this.user.activity, 'cals')},
+
+
+    total_change() {
+      let weights = this.user.weights
+      if (!weights || !weights.length) return 0
+      let c = weights[weights.length - 1].weight - weights[0].weight
+      return c.toFixed(1)
+    }
   },
 
 
@@ -153,9 +161,9 @@ export default {
     },
 
 
-    set_day(date) {
+    set_day(date = util.today()) {
       let path = '/user/' + this.name + (date ? '?date=' + date : '')
-      if (path == this.$route.path) this.update()
+      if (path == this.$route.path && date == this.date) this.update()
       else this.$router.push(path)
     },
 
@@ -171,13 +179,49 @@ export default {
 .user-view
   h2.message {{message}}
 
-  .date-nav(v-if="user.sex")
-    button(@click="set_day()") Today
+  .user-nav(v-if="user.sex")
+    .name {{name}}
     button(@click="add_day(-7)"): .fa.fa-angle-double-left
     button(@click="add_day(-1)"): .fa.fa-angle-left
     .date {{new Date(date).toDateString()}}
     button(@click="add_day(1)"): .fa.fa-angle-right
     button(@click="add_day(7)"): .fa.fa-angle-double-right
+    button(@click="set_day()") Today
+
+  .profile
+    table
+      tr
+        th Height
+        td {{user.height}}cm
+        th Age
+        td {{age}}
+        th Sex
+        td {{user.sex}}
+      tr
+        th Weight
+        td.weight
+          form(@submit.prevent="set_weight")
+            div
+              input(v-model.number="new_weight", step="0.1", type="number")
+              | kg
+            button(type="sumit", title="Save weight."): .fa.fa-save
+        th Change
+        td(:class="{success: change < 0, error: 0 < change}") {{change}}kg
+        th Total
+        td(:class="{success: total_change < 0, error: 0 < total_change}")
+          | {{total_change}}kg
+      tr
+        th Calorie Target
+        td.target
+          form(@submit.prevent="set_goal")
+            div
+              input(v-model.number="new_goal", type="number")
+              | kcal
+            button(type="submit", title="Save goal."): .fa.fa-save
+        th BMR
+        td {{bmr.toLocaleString()}}kcal
+        th SMR
+        td {{smr.toLocaleString()}}kcal
 
   .user(v-if="user.sex")
     .intake
@@ -186,25 +230,36 @@ export default {
         tr
           th Calories
           th Description
-          th Action
 
         tr(v-for="e in user.calories")
           td.calories {{e.cals.toLocaleString()}}
-          td.description {{e.item}}
-          td
-            button(@click="delete_cal_entry(e.id)", title="Delete entry.")
-              .fa.fa-trash
+
+          td.description
+            div
+              span {{e.item}}
+              button(@click="delete_cal_entry(e.id)", title="Delete entry.")
+                .fa.fa-trash
 
         tr
           td.calories
             form#cal-form(@submit.prevent="add_cal")
             input(v-model.number="new_cal_cals", type="number", name="calories",
               form="cal-form")
+
           td.description
-            input(v-model="new_cal_desc", name="cal_desc", form="cal-form")
-          td
-            button(title="Add entry.", type="submit", form="cal-form")
-              .fa.fa-plus
+            div
+              input(v-model="new_cal_desc", name="cal_desc", form="cal-form")
+              button(title="Add entry.", type="submit", form="cal-form")
+                .fa.fa-plus
+
+        tr
+          td.calories {{cal_total.toLocaleString()}}
+          th Total
+
+        tr
+          td.calories(:class="{error: cal_remain < 0}")
+            | {{cal_remain.toLocaleString()}}
+          th Remaining
 
     .activity
       h3 Activity
@@ -212,74 +267,31 @@ export default {
         tr
           th Calories
           th Description
-          th Action
 
         tr(v-for="e in user.activity")
           td.calories {{e.cals.toLocaleString()}}
-          td.description {{e.item}}
-          td
-            button(@click="delete_act_entry(e.id)", title="Delete entry.")
-              .fa.fa-trash
+
+          td.description
+            div
+              span {{e.item}}
+              button(@click="delete_act_entry(e.id)", title="Delete entry.")
+                .fa.fa-trash
 
         tr
           td.calories
             form#act-form(@submit.prevent="add_act")
             input(v-model.number="new_act_cals", type="number", name="calories",
               form="act-form")
+
           td.description
-            input(v-model="new_act_desc", name="cal_desc", form="act-form")
-          td
-            button(title="Add entry.", type="submit", form="act-form")
-              .fa.fa-plus
+            div
+              input(v-model="new_act_desc", name="cal_desc", form="act-form")
+              button(title="Add entry.", type="submit", form="act-form")
+                .fa.fa-plus
 
-    .profile
-      h3 Profile
-      table
         tr
-          th User
-          td {{name}}
-          th Sex
-          td {{user.sex}}
-        tr
-          th Height
-          td {{user.height}}cm
-          th Age
-          td {{age}}
-        tr
-          th Weight
-          td.weight
-            form(@submit.prevent="set_weight")
-              input(v-model.number="new_weight", step="0.1", type="number")
-              | kg
-              |
-              button(type="sumit", title="Save weight."): .fa.fa-save
-          th BMR
-          td {{bmr.toLocaleString()}}kcal
-        tr
-          th Change
-          td(:class="{success: change < 0, error: 0 < change}") {{change}}kg
-          th SMR
-          td {{smr.toLocaleString()}}kcal
-
-    .results
-      h3 Results
-      table
-        tr
-          th Total Calories
-          td {{cal_total.toLocaleString()}}
-        tr
-          th Target Calories
-          td.target
-            form(@submit.prevent="set_goal")
-              input(v-model.number="new_goal", type="number")
-              |
-              button(type="submit", title="Save goal."): .fa.fa-save
-        tr
-          th Remaining Calories
-          td(:class="{error: cal_remain < 0}") {{cal_remain.toLocaleString()}}
-        tr
-          th Calories Burned
-          td {{act_total.toLocaleString()}}
+          td.calories {{act_total.toLocaleString()}}
+          th(colspan="2") Total
 
   ChartView(v-if="user.weights", :history="user")
 </template>
@@ -288,13 +300,17 @@ export default {
 .user-view
   text-align center
 
-  .date-nav
+  .user-nav
     display flex
     flex-direction row
     gap 1em
+    margin-bottom 1em
     justify-content center
 
-    .date
+    .name
+      text-transform capitalize
+
+    .name, .date
       font-weight bold
       font-size 120%
 
@@ -316,18 +332,45 @@ export default {
     &.calories, &.activity
       width 100%
 
+    td.calories
+      text-align right
+
     td.calories input
       width 6em
 
     td.description
       width 100%
 
-      input
-        width calc(100% - 1.2em)
+      > div
+        display flex
+        gap 0.25em
+
+        > :nth-child(1)
+          flex 1
 
     .target, .weight
       input
         width 4em
+
+.profile table
+  margin auto
+
+  td
+    text-align right
+
+    > form
+      display flex
+      gap 0.25em
+      text-align left
+
+      input
+        text-align right
+
+      > :nth-child(1)
+        flex 1
+
+  input
+    width 5em
 
 .chart-view
   text-align left

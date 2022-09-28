@@ -104,11 +104,11 @@ BEGIN
     WHERE @min < date AND date <= @date AND uid = @uid ORDER BY DATE;
 
   SELECT SUM(cals) cals, date FROM calories
-    WHERE uid = @uid AND @min < date AND date <= @date AND uid = @uid
+    WHERE uid = @uid AND @min < date AND date < @date AND uid = @uid
     GROUP BY date ORDER BY date;
 
   SELECT SUM(cals) cals, date FROM activity
-    WHERE uid = @uid AND @min < date AND date <= @date AND uid = @uid
+    WHERE uid = @uid AND @min < date AND date < @date AND uid = @uid
     GROUP BY date ORDER BY date;
 END //
 DELIMITER ;
